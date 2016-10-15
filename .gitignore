@@ -1,0 +1,11 @@
+.idea/
+*.iml
+
+.DS_Store
+
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/
+
+init.txt
+variables
