@@ -42,3 +42,13 @@ variable "base_cidr_block" {
 variable "allow_traffic_from" {
   description = "A CIDR block from which we will allow traffic in the Security group"
 }
+
+variable "bastion_instance_type" {
+  description = "The type of instance used as bastion hosts within a VPC"
+  default = "t2.medium"
+}
+
+variable "jenkins_instance_type" {
+  description = "The type of instance used to run the jenkins ui"
+  default = "t2.large"
+}

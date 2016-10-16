@@ -1,18 +1,5 @@
 data "aws_availability_zones" "all" { }
 
-data "aws_ami" "ec2-linux" {
-  most_recent = true
-  filter {
-    name = "name"
-    values = ["amzn-ami-hvm-*.x86_64-gp2"]
-  }
-  filter {
-    name = "virtualization-type"
-    values = ["hvm"]
-  }
-  owners = ["amazon"]
-}
-
 // -------------------------
 // Primary Public Subnet
 
@@ -46,17 +33,6 @@ resource "aws_route_table" "public_primary_route_table" {
 resource "aws_route_table_association" "pub_primary_route_assoc" {
   subnet_id      = "${module.public_primary_subnet.subnet_id }"
   route_table_id = "${aws_route_table.public_primary_route_table.id}"
-}
-
-resource "aws_instance" "bastion-primary" {
-  ami = "${data.aws_ami.ec2-linux.id}"
-  instance_type = "t2.micro"
-  subnet_id = "${module.public_primary_subnet.subnet_id}"
-  security_groups = ["${aws_security_group.ssh.id}"]
-  key_name = "${var.key_name}"
-  tags {
-    Name = "bastion ${data.aws_availability_zones.all.names[0]}"
-  }
 }
 
 // -------------------------
@@ -94,17 +70,6 @@ resource "aws_route_table_association" "pub_secondary_route_assoc" {
   route_table_id = "${aws_route_table.public_secondary_route_table.id}"
 }
 
-resource "aws_instance" "bastion-secondary" {
-  ami = "${data.aws_ami.ec2-linux.id}"
-  instance_type = "t2.micro"
-  subnet_id = "${module.public_secondary_subnet.subnet_id}"
-  security_groups = ["${aws_security_group.ssh.id}"]
-  key_name = "${var.key_name}"
-  tags {
-    Name = "bastion ${data.aws_availability_zones.all.names[1]}"
-  }
-}
-
 // -------------------------
 // Primary Private Subnet
 
@@ -120,7 +85,7 @@ resource "aws_route_table" "private_primary_route_table" {
   vpc_id = "${aws_vpc.main.id}"
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_nat_gateway.primary.id}"
+    nat_gateway_id = "${aws_nat_gateway.primary.id}"
   }
 }
 
@@ -144,7 +109,7 @@ resource "aws_route_table" "private_secondary_route_table" {
   vpc_id = "${aws_vpc.main.id}"
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_nat_gateway.secondary.id}"
+    nat_gateway_id = "${aws_nat_gateway.secondary.id}"
   }
 }
 

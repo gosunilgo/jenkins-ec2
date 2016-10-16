@@ -1,15 +1,11 @@
-variable "region" {
-  description = "The name of the AWS region to set up a network within"
-}
-
 variable "allow_traffic_from" {}
+
+variable "ec2_linux_ami_id" {}
 
 variable "base_cidr_block" {}
 
-variable "key_name" {
-  description = "SSH key name in your AWS account for AWS instances."
-}
+variable "bastion_instance_type" {}
 
-provider "aws" {
-  region = "${var.region}"
-}
+variable "key_name" {}
+
+variable "region" {}
