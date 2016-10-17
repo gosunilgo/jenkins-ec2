@@ -1,0 +1,33 @@
+# AWS Vars you'll need to set
+export AWS_ACCESS_KEY_ID="YOUR_KEY_INFO"
+export AWS_SECRET_ACCESS_KEY="YOUR_KEY_INFO"
+export AWS_SESSION_TOKEN="YOUR_KEY_INFO"
+
+# The AWS region in which the resource will be provisioned
+export AWS_DEFAULT_REGION=us-west-2
+
+# Used to label resources to differentiate multiple deployments
+export TF_VAR_group_name=dev-team-2
+
+# A pre-existing ssh keypair used to connect to the bastion hosts
+export TF_VAR_key_name=aws-dev
+
+# A pre-existing S3 bucket where terraform state file is stored
+export TF_VAR_s3_bucket=jenkins-ecs-terraform
+export TF_VAR_s3_bucket_prefix=$TF_VAR_group_name
+
+# Networking values
+export TF_VAR_base_cidr_block="10.3.0.0/16"
+
+# Bastion host type and security group CIDR to allow ssh traffic
+export TF_VAR_allow_traffic_from=54.0.0.0/24
+export TF_VAR_bastion_instance_type=t2.medium
+
+# Jenkins values
+export TF_VAR_jenkins_instance_type=m4.large
+export TF_VAR_jenkins_data_disk_size_in_gb=50
+export TF_VAR_jenkins_data_delete_on_termination=true
+
+# Expose certain AWS vars to terraform
+export TF_VAR_secret_key=$AWS_SECRET_ACCESS_KEY
+export TF_VAR_region=$AWS_DEFAULT_REGION
