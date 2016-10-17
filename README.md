@@ -20,7 +20,7 @@ __Note:__ This uses syntax introduced in the [0.7.6 version](https://github.com/
 * Install and configure the Git and EC2 Jenkins plugins
 * Create a job that builds using Docker
 
-[Detailed Deployment Steps](https://github.com/spohnan/jenkins-ec2/deployment/)
+[Detailed Deployment Steps](https://github.com/spohnan/jenkins-ec2/tree/master/deployment)
 
 ### Diagram
 
