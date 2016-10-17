@@ -9,7 +9,7 @@ __Note:__ This uses syntax introduced in the [0.7.6 version](https://github.com/
 * Deploys a highly available VPC with two public and private subnets each with their own NAT Gateway and Bastion
 * Deploys a Jenkins instance with JENKINS_HOME mounted to a separate EBS volume in a private subnet
 * Jenkins instance is launched with an IAM role allowing it to use the EC2 Plugin to provision worker nodes dynamically
-* Builds are done on dynamically provisioned instances using Docker containers so dev have control of their build environment and the infrastructure team doesn't have to worry about configuring Jenkins worker nodes
+* Builds are done on dynamically provisioned instances using Docker containers so devs have control of their build environment and the infrastructure team doesn't have to worry about configuring Jenkins worker nodes
 
 ### Deployment Steps
 
