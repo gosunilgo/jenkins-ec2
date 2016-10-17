@@ -8,4 +8,8 @@ variable "security_group_id" {}
 
 variable "key_name" {}
 
-variable "jenkins_instance_type" {}
+variable "instance_type" {}
+
+variable "data_disk_size_in_gb" {}
+
+variable "data_delete_on_termination" {}

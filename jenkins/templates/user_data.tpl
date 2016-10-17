@@ -1,18 +1,25 @@
 #!/bin/bash
 
 # Configure data disk
-parted -s /dev/xvdf mklabel gpt
-parted -s -- /dev/xvdf mkpart primary ext4 2048s 100%
-mkfs -t ext4 /dev/xvdf1
-tune2fs -m 0 /dev/xvdf1
+parted -s /dev/xvdj mklabel gpt
+parted -s -- /dev/xvdj mkpart primary ext4 2048s 100%
+mkfs -t ext4 /dev/xvdj1
+tune2fs -m 0 /dev/xvdj1
 
-# Install Jenkins
+# Install Jenkins (wait for NAT gateway)
+until $(curl --output /dev/null --silent --head --fail http://pkg.jenkins-ci.org/redhat/jenkins.repo); do
+    sleep 5
+done
 curl http://pkg.jenkins-ci.org/redhat/jenkins.repo > /etc/yum.repos.d/jenkins.repo
 rpm --import http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key
-yum -y install jenkins
+
+until $(curl --output /dev/null --silent --head --fail http://repo.us-west-2.amazonaws.com/latest/main/mirror.list); do
+    sleep 5
+done
+yum -y install jenkins yum-cron
 
 # Mount data disk to JENKINS_HOME
-echo "/dev/xvdf1    /var/lib/jenkins    ext4    defaults,nofail 0 2" >> /etc/fstab
+echo "/dev/xvdj1    /var/lib/jenkins    ext4    defaults,nofail 0 2" >> /etc/fstab
 mount -a
 chown jenkins:jenkins /var/lib/jenkins
 
@@ -23,6 +30,10 @@ base64 -d /tmp/config.xml > /var/lib/jenkins/config.xml
 # Adjust settings
 sed -i 's/JENKINS_JAVA_OPTIONS=.*/JENKINS_JAVA_OPTIONS="-Xmx1g -Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"/' /etc/sysconfig/jenkins
 
-# Start the service
+# Start the services
 service jenkins start
 chkconfig --add jenkins
+chkconfig jenkins on
+service yum-cron start
+chkconfig --add yum-cron
+chkconfig yum-cron on

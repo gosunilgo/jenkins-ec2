@@ -52,3 +52,13 @@ variable "jenkins_instance_type" {
   description = "The type of instance used to run the jenkins ui"
   default = "t2.large"
 }
+
+variable "jenkins_data_disk_size_in_gb" {
+  description = "The size of the EBS volume storing JENKINS_HOME"
+  default = 256
+}
+
+variable "jenkins_data_delete_on_termination" {
+  description = "Delete the Jenkins data disk when the instance is terminated"
+  default = false
+}

@@ -26,5 +26,7 @@ module "jenkins" {
   subnet_id             = "${module.jenkins-vpc.private_primary_subnet_id}"
   security_group_id     = "${module.jenkins-vpc.internal_security_group_id}"
   key_name              = "${var.key_name}"
-  jenkins_instance_type = "${var.jenkins_instance_type}"
+  instance_type         = "${var.jenkins_instance_type}"
+  data_disk_size_in_gb  = "${var.jenkins_data_disk_size_in_gb}"
+  data_delete_on_termination = "${var.jenkins_data_delete_on_termination}"
 }
