@@ -24,4 +24,4 @@ __Note:__ This uses syntax introduced in the [0.7.6 version](https://github.com/
 
 ### Diagram
 
-[[https://github.com/spohnan/jenkins-ec2/deployment/jenkins-ec2.png]]
+![diagram](https://github.com/spohnan/jenkins-ec2/deployment/jenkins-ec2.png)
