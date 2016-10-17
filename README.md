@@ -37,7 +37,7 @@ __Note:__ This uses syntax introduced in the [0.7.6 version](https://github.com/
 The remainder of the options allow you to set up multiple worker node configurations and tags which 
 can then be used as targets in builds using the "Restrict where this project can be run" project build option. 
 Unfortunately many of these options are hidden within "Advanced" configuration sections within the configuration 
-screen. I've copied a finished example below from a working system, it saved to the /var/lib/jenkins/config.xml file.
+screen. I've copied the plugin config from a section of the /var/lib/jenkins/config.xml file below.
  
 The high level goals are as follows:
 
