@@ -4,8 +4,8 @@ variable "ami_id" {}
 
 variable "key_name" {}
 
-variable "tag_name" {}
+variable "subnet_primary_id" {}
 
-variable "subnet_id" {}
+variable "subnet_secondary_id" {}
 
 variable "security_group_id" {}
