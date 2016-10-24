@@ -27,6 +27,7 @@ module "jenkins" {
   security_group_id     = "${module.jenkins-vpc.internal_security_group_id}"
   key_name              = "${var.key_name}"
   instance_type         = "${var.jenkins_instance_type}"
+  admin_password        = "${var.jenkins_admin_password}"
   data_disk_size_in_gb  = "${var.jenkins_data_disk_size_in_gb}"
   data_delete_on_termination = "${var.jenkins_data_delete_on_termination}"
 }

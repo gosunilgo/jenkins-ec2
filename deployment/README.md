@@ -2,10 +2,9 @@
 
 #### Jenkins Install Plugins
 
-* Manage Jenkins -> Manage Plugins links
-* From the "Available" tab search for "ec2 plugin" and install without restart
-* From the "Available" tab search for "Git plugin" and install with restart
-* After the reboot click Manage Jenkins -> Configure System and at the bottom will be a new "Add a new cloud" option
+* Connect through the bastion and port forward back port 8080
+* Log in using the admin user and the password you configured in the environment variables
+* Choose either the install common or custom plugins options. The EC2 plugin has already been pre-installed
 
 #### Jenkins Configure EC2 Plugin
 * Add a new Ec2 Cloud
@@ -44,8 +43,11 @@ The high level goals are as follows:
         <ebsOptimized>false</ebsOptimized>
         <labels>docker</labels>
         <mode>NORMAL</mode>
-        <initScript>sudo yum -y install docker git
-sudo service docker start</initScript>
+        <initScript>sudo yum update
+sudo yum -y install docker git
+sudo service docker start
+sudo usermod -aG docker ec2-user
+</initScript>
         <tmpDir></tmpDir>
         <userData></userData>
         <numExecutors>1</numExecutors>
@@ -92,6 +94,6 @@ sudo service docker start</initScript>
 #!/bin/bash
 
 # Run the maven package command using the official Maven Docker image
-sudo docker run --rm -v "$(pwd):/home/ec2-user" \
+docker run --rm -v "$(pwd):/home/ec2-user" \
         maven:3-jdk-8 mvn -f /home/ec2-user package
 ```

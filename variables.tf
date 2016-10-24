@@ -48,6 +48,10 @@ variable "bastion_instance_type" {
   default = "t2.medium"
 }
 
+variable "jenkins_admin_password" {
+  description = "The administrator password"
+}
+
 variable "jenkins_instance_type" {
   description = "The type of instance used to run the jenkins ui"
   default = "t2.large"

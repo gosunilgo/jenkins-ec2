@@ -1,6 +1,9 @@
 
 data "template_file" "user_data" {
   template = "${file("${path.module}/templates/user_data.tpl")}"
+  vars {
+    admin_password = "${var.admin_password}"
+  }
 }
 
 resource "aws_iam_role" "jenkins_ec2_role" {

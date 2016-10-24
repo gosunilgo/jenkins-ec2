@@ -1,3 +1,5 @@
+variable "admin_password" {}
+
 variable "availability_zone" {}
 
 variable "ec2_linux_ami_id" {}
