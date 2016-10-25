@@ -24,6 +24,7 @@ export TF_VAR_allow_traffic_from=54.0.0.0/24
 export TF_VAR_bastion_instance_type=t2.medium
 
 # Jenkins values
+export TF_VAR_jenkins_admin_password=SEcRET475
 export TF_VAR_jenkins_instance_type=m4.large
 export TF_VAR_jenkins_data_disk_size_in_gb=50
 export TF_VAR_jenkins_data_delete_on_termination=true
