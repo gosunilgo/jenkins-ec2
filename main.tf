@@ -16,6 +16,8 @@ module "jenkins-vpc" {
   key_name              = "${var.key_name}"
   ec2_linux_ami_id      = "${module.aws-ami.ec2_linux_ami_id}"
   bastion_instance_type = "${var.bastion_instance_type}"
+  s3_bucket             = "${var.s3_bucket}"
+  s3_bucket_prefix      = "${var.s3_bucket_prefix}"
   key_name              = "${var.key_name}"
 }
 

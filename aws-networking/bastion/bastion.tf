@@ -1,17 +1,58 @@
 data "template_file" "user_data" {
   template = "${file("${path.module}/templates/user_data.tpl")}"
+  vars {
+    region            = "${var.region}"
+    s3_bucket         = "${var.s3_bucket}"
+    s3_bucket_prefix  = "${var.s3_bucket_prefix}"
+  }
 }
 
 resource "aws_iam_role_policy" "push_logs_policy" {
-  name = "push_logs"
+  name = "push-logs"
   role = "${aws_iam_role.bastion_role.id}"
   policy = "${file("${path.module}/policies/push-logs-policy.json")}"
 }
 
 resource "aws_iam_role_policy" "push_cloudwatch_metrics_policy" {
-  name = "push_cloudwatch_metrics"
+  name = "push-cloudwatch-metrics"
   role = "${aws_iam_role.bastion_role.id}"
   policy = "${file("${path.module}/policies/push-cloudwatch-metrics.json")}"
+}
+
+resource "aws_iam_role_policy" "describe_asg_instances_policy" {
+  name = "describe-asg-instances"
+  role = "${aws_iam_role.bastion_role.id}"
+  policy = "${file("${path.module}/policies/describe-asg-instances.json")}"
+}
+
+resource "aws_iam_role_policy" "ssh_certificate_storage" {
+  name   = "ssh-certificate-storage"
+  role   = "${aws_iam_role.bastion_role.id}"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:ListBucket"],
+      "Resource": ["arn:aws:s3:::${var.s3_bucket}"],
+      "Condition": {
+          "StringLike": {
+              "s3:prefix": "${var.s3_bucket_prefix}/ssh/*"
+          }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject"
+      ],
+      "Resource": ["arn:aws:s3:::${var.s3_bucket}/${var.s3_bucket_prefix}/ssh/*"]
+    }
+  ]
+}
+EOF
 }
 
 resource "aws_iam_role" "bastion_role" {
@@ -72,22 +113,6 @@ resource "aws_autoscaling_group" "bastion_asg" {
     propagate_at_launch = true
   }
 }
-
-//Sync Host Keys with something like the following
-// ----------------------------------------------------------------------------------------------
-//SRC=52.15.93.155
-//DEST=52.15.123.142
-//SSH="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
-//mkdir ssh
-//rsync -e "$SSH" --rsync-path="sudo rsync" $SRC:/etc/ssh/*key* ssh/
-//rsync -e "$SSH" --rsync-path="sudo rsync" ssh/* $DEST:/etc/ssh
-//$SSH $DEST "sudo find /etc/ssh -name "*key" -exec chown 400 {} \; ; sudo service sshd restart"
-//rm -fr ssh/
-
-// Also add something like the following your .ssh/config to prevent ssh timeouts
-// Host *
-//   ServerAliveInterval 60
-
 
 resource "aws_elb" "bastion_elb" {
   cross_zone_load_balancing = true

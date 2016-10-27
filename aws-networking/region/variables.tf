@@ -9,3 +9,7 @@ variable "bastion_instance_type" {}
 variable "key_name" {}
 
 variable "region" {}
+
+variable "s3_bucket" {}
+
+variable "s3_bucket_prefix" {}
