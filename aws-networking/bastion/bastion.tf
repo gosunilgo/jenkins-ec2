@@ -102,7 +102,8 @@ resource "aws_autoscaling_group" "bastion_asg" {
   desired_capacity = 2
   force_delete = true
   launch_configuration = "${aws_launch_configuration.bastion_launch_conf.name}"
-  load_balancers       = ["${aws_elb.bastion_elb.name}"]
+  load_balancers       = [ "${aws_elb.bastion_elb.name}" ]
+  termination_policies = [ "OldestInstance" ]
   vpc_zone_identifier = [
     "${var.subnet_primary_id}",
     "${var.subnet_secondary_id}"
@@ -112,6 +113,13 @@ resource "aws_autoscaling_group" "bastion_asg" {
     value = "bastion"
     propagate_at_launch = true
   }
+}
+
+resource "aws_autoscaling_lifecycle_hook" "launch_pending" {
+  name = "auto-scaling-launch-hook"
+  heartbeat_timeout = 900
+  autoscaling_group_name = "${aws_autoscaling_group.bastion_asg.name}"
+  lifecycle_transition = "autoscaling:EC2_INSTANCE_LAUNCHING"
 }
 
 resource "aws_elb" "bastion_elb" {

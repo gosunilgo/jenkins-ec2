@@ -4,7 +4,8 @@
     {
       "Sid": "Stmt1337632",
       "Action": [
-        "autoscaling:DescribeAutoScalingInstances"
+        "autoscaling:DescribeAutoScalingInstances",
+        "autoscaling:CompleteLifecycleAction"
       ],
       "Effect": "Allow",
       "Resource": "*"

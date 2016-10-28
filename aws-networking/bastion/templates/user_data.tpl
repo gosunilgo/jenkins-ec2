@@ -1,19 +1,16 @@
 #!/bin/bash
 
-poll_for_response() {
-    echo "polling for response from $1"
-    until $(curl --output /dev/null --silent --head --fail "$1"); do
-        echo -n "." && sleep 2
-    done
-}
+# Wait for IGW so we can get to all our network resources
+until $(curl --output /dev/null --silent --head --fail https://aws.amazon.com); do
+    echo -n "." && sleep 2
+done
 
-# Wait for NAT and Internet Gateway so we can get to all our network resources
-poll_for_response http://repo.us-east-2.amazonaws.com/latest/main/mirror.list
-
+yum -y update
 yum -y install awslogs curl jq yum-cron
 pip install awscli --upgrade
 
 # Sync SSH host keys
+INSTANCE_ID=$(curl --silent http://169.254.169.254/latest/meta-data/instance-id)
 keys_not_present() {
     return $(aws s3 ls s3://${s3_bucket}/${s3_bucket_prefix}/ssh/ssh_host_rsa_key --region ${region} | wc -l)
 }
@@ -25,8 +22,12 @@ download_keys() {
     service sshd restart
 }
 
+# Possible States:
+# - Shared keys present, download and replace
+# - Shared keys absent
+#   - If lead server (alphabetically first instance ID) upload your host keys
+#   - If not lead, poll for presence of keys (up to 5 minutes) download and replace when available
 if keys_not_present ; then
-    INSTANCE_ID=$(curl --silent http://169.254.169.254/latest/meta-data/instance-id)
     LEAD_BASTION=$(aws autoscaling describe-auto-scaling-instances --region ${region} | jq --raw-output --sort-keys '.AutoScalingInstances[].InstanceId' | head -1)
     if [ "$INSTANCE_ID" = "$LEAD_BASTION" ] ; then
         aws s3 cp /etc/ssh/ s3://${s3_bucket}/${s3_bucket_prefix}/ssh/ --recursive --exclude '*' --include '*key*' --region ${region}
@@ -36,6 +37,9 @@ if keys_not_present ; then
 else
     download_keys
 fi
+
+
+# Configure Logging
 
 echo "* * * * * aws cloudwatch put-metric-data --region ${region} --metric-name ssh-sessions --namespace "bastion" --timestamp \$(date -Ih) --value \$(w -h | wc -l)" >> /var/spool/cron/root
 
@@ -62,4 +66,10 @@ chkconfig awslogs on
 service yum-cron start
 chkconfig yum-cron on
 
-yum -y update
+# Signal to the ASG that this instance is ready to be put into service
+aws autoscaling complete-lifecycle-action \
+    --lifecycle-action-result CONTINUE \
+    --instance-id $INSTANCE_ID \
+    --lifecycle-hook-name "auto-scaling-launch-hook" \
+    --auto-scaling-group-name "bastion" \
+    --region ${region}
