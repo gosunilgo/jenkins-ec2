@@ -5,6 +5,7 @@ until $(curl --output /dev/null --silent --head --fail https://aws.amazon.com); 
     echo -n "." && sleep 2
 done
 
+hostname bastion
 yum -y update
 yum -y install awslogs curl jq yum-cron
 pip install awscli --upgrade
@@ -66,7 +67,7 @@ chkconfig awslogs on
 service yum-cron start
 chkconfig yum-cron on
 
-# Signal to the ASG that this instance is ready to be put into service
+# Signal to the ASG that this instance is ready to be put into service and can be taken out of Pending:Wait
 aws autoscaling complete-lifecycle-action \
     --lifecycle-action-result CONTINUE \
     --instance-id $INSTANCE_ID \
