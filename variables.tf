@@ -43,9 +43,24 @@ variable "allow_traffic_from" {
   description = "A CIDR block from which we will allow traffic in the Security group"
 }
 
+variable "bastion_instance_count" {
+  description = "How many bastion instances will be provisioned"
+  default = 2
+}
+
 variable "bastion_instance_type" {
   description = "The type of instance used as bastion hosts within a VPC"
   default = "t2.medium"
+}
+
+variable "bastion_rolling_update_start_cron" {
+  description = "Increase the number of bastion instances by one at this time"
+  default = ""
+}
+
+variable "bastion_rolling_update_stop_cron" {
+  description = "Decrease the number of bastion instances by one at this time"
+  default = ""
 }
 
 variable "jenkins_admin_password" {

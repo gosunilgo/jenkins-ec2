@@ -2,6 +2,12 @@ variable "ami_id" {}
 
 variable "instance_type" {}
 
+variable "instance_count" {}
+
+variable "rolling_update_start" {}
+
+variable "rolling_update_stop" {}
+
 variable "key_name" {}
 
 variable "region" {}

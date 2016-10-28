@@ -9,16 +9,19 @@ module "aws-ami" {
 }
 
 module "jenkins-vpc" {
-  source                = "./aws-networking/region"
-  region                = "${var.region}"
-  allow_traffic_from    = "${var.allow_traffic_from}"
-  base_cidr_block       = "${var.base_cidr_block}"
-  key_name              = "${var.key_name}"
-  ec2_linux_ami_id      = "${module.aws-ami.ec2_linux_ami_id}"
-  bastion_instance_type = "${var.bastion_instance_type}"
-  s3_bucket             = "${var.s3_bucket}"
-  s3_bucket_prefix      = "${var.s3_bucket_prefix}"
-  key_name              = "${var.key_name}"
+  source                            = "./aws-networking/region"
+  region                            = "${var.region}"
+  allow_traffic_from                = "${var.allow_traffic_from}"
+  base_cidr_block                   = "${var.base_cidr_block}"
+  key_name                          = "${var.key_name}"
+  ec2_linux_ami_id                  = "${module.aws-ami.ec2_linux_ami_id}"
+  bastion_instance_count            = "${var.bastion_instance_count}"
+  bastion_instance_type             = "${var.bastion_instance_type}"
+  bastion_rolling_update_start_cron = "${var.bastion_rolling_update_start_cron}"
+  bastion_rolling_update_stop_cron  = "${var.bastion_rolling_update_stop_cron}"
+  s3_bucket                         = "${var.s3_bucket}"
+  s3_bucket_prefix                  = "${var.s3_bucket_prefix}"
+  key_name                          = "${var.key_name}"
 }
 
 module "jenkins" {

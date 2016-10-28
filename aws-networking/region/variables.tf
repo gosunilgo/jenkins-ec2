@@ -6,6 +6,12 @@ variable "base_cidr_block" {}
 
 variable "bastion_instance_type" {}
 
+variable "bastion_instance_count" {}
+
+variable "bastion_rolling_update_start_cron" {}
+
+variable "bastion_rolling_update_stop_cron" {}
+
 variable "key_name" {}
 
 variable "region" {}

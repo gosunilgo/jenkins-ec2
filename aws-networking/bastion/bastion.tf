@@ -26,7 +26,7 @@ resource "aws_iam_role_policy" "describe_asg_instances_policy" {
 }
 
 resource "aws_iam_role_policy" "ssh_certificate_storage" {
-  name   = "ssh-certificate-storage"
+  name   = "ssh-certificate-storage-${var.s3_bucket_prefix}"
   role   = "${aws_iam_role.bastion_role.id}"
   policy = <<EOF
 {
@@ -96,10 +96,10 @@ resource "aws_launch_configuration" "bastion_launch_conf" {
 }
 
 resource "aws_autoscaling_group" "bastion_asg" {
-  name = "bastion"
-  min_size = 1
-  max_size = 2
-  desired_capacity = 2
+  name = "bastion-asg"
+  min_size = "${var.instance_count}"
+  max_size = "${var.instance_count}"
+  desired_capacity = "${var.instance_count}"
   force_delete = true
   launch_configuration = "${aws_launch_configuration.bastion_launch_conf.name}"
   load_balancers       = [ "${aws_elb.bastion_elb.name}" ]
@@ -110,7 +110,7 @@ resource "aws_autoscaling_group" "bastion_asg" {
   ]
   tag {
     key = "Name"
-    value = "bastion"
+    value = "bastion-${var.s3_bucket_prefix}"
     propagate_at_launch = true
   }
 }
@@ -120,6 +120,28 @@ resource "aws_autoscaling_lifecycle_hook" "launch_pending" {
   heartbeat_timeout = 900
   autoscaling_group_name = "${aws_autoscaling_group.bastion_asg.name}"
   lifecycle_transition = "autoscaling:EC2_INSTANCE_LAUNCHING"
+}
+
+resource "aws_autoscaling_schedule" "scale_up" {
+  scheduled_action_name  = "scale-up"
+  min_size               = "${var.instance_count + 1}"
+  max_size               = "${var.instance_count + 1}"
+  desired_capacity       = "${var.instance_count + 1}"
+  recurrence             = "${var.rolling_update_start}"
+  autoscaling_group_name = "${aws_autoscaling_group.bastion_asg.name}"
+  count                  = "${signum(length(var.rolling_update_start))}"
+  depends_on             = [ "aws_autoscaling_group.bastion_asg" ]
+}
+
+resource "aws_autoscaling_schedule" "scale_down" {
+  scheduled_action_name  = "scale-down"
+  min_size               = "${var.instance_count}"
+  max_size               = "${var.instance_count}"
+  desired_capacity       = "${var.instance_count}"
+  recurrence             = "${var.rolling_update_stop}"
+  autoscaling_group_name = "${aws_autoscaling_group.bastion_asg.name}"
+  count                  = "${signum(length(var.rolling_update_stop))}"
+  depends_on             = [ "aws_autoscaling_group.bastion_asg" ]
 }
 
 resource "aws_elb" "bastion_elb" {
