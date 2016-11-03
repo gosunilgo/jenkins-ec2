@@ -5,11 +5,11 @@ provider "aws" {
 }
 
 module "aws-ami" {
-  source     = "./aws-ami"
+  source     = "github.com/spohnan/tf-aws-linux-ami"
 }
 
 module "jenkins-vpc" {
-  source                            = "./aws-networking/region"
+  source                            = "github.com/spohnan/tf-aws-ha-vpc/region"
   region                            = "${var.region}"
   allow_traffic_from                = "${var.allow_traffic_from}"
   base_cidr_block                   = "${var.base_cidr_block}"
