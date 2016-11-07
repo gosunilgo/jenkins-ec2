@@ -22,6 +22,11 @@ export TF_VAR_base_cidr_block="10.3.0.0/16"
 # Bastion host type and security group CIDR to allow ssh traffic
 export TF_VAR_allow_traffic_from=54.0.0.0/24
 export TF_VAR_bastion_instance_type=t2.medium
+export TF_VAR_bastion_instance_count=2
+# You can bump up the number by one and then terminate the oldest to do a continual
+# rolling update of the bastion hosts if these are set
+#export TF_VAR_bastion_rolling_update_start_cron="23 23 * * SUN"
+#export TF_VAR_bastion_rolling_update_stop_cron="45 23 * * SUN"
 
 # Jenkins values
 export TF_VAR_jenkins_admin_password=SEcRET475
